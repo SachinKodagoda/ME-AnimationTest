@@ -6,12 +6,25 @@ let eyes = [];
 let theta;
 let gameFrame = 1;
 
-const jetMan = new Image();
-const jumpLeft = new Image();
-const jumpRight = new Image();
-jetMan.src = "jet.png";
-jumpLeft.src = "jumpLeft.png";
-jumpRight.src = "jumpRight.png";
+const jetRight = new Image();
+const jetLeft = new Image();
+jetRight.src = "jetRight.png";
+jetLeft.src = "jetLeft.png";
+let isClicked = false;
+
+const spites = {
+  jet: {
+    fullWidth: 3460,
+    fullHeight: 1797,
+    spriteWidth: 692,
+    spriteHeight: 599,
+    x_images: 5,
+    y_images: 3,
+    total: 15,
+  },
+};
+
+const selectedSpite = "jet";
 
 const mouse = {
   x: undefined,
@@ -23,18 +36,21 @@ window.addEventListener("mousemove", function (e) {
   mouse.y = e.y;
 });
 
+window.addEventListener("mouseup", function (e) {
+  isClicked = false;
+});
+window.addEventListener("mousedown", function (e) {
+  isClicked = true;
+});
+
+// const bounds = canvas.getBoundingClientRect();
+// console.log(bounds);
+
 class Eye {
   constructor(x, y, radius) {
     this.x = x;
     this.y = y;
     this.radius = radius;
-    this.spriteWidth = 512;
-    this.spriteHeight = 512;
-    this.spriteFullWidth = 2048; // 512 * 4
-    this.spriteFullHeight = 1536; // 512 * 3
-    this.frameX = 2;
-    this.frameY = 2;
-    this.frame = 0;
   }
   draw() {
     // mouse_angle_calculation
@@ -109,34 +125,35 @@ class Eye {
     ctx.fillStyle = "rgba(255,255,255,0.9)";
     ctx.fill();
     ctx.closePath();
-
-    const xy = spiteCalculation(gameFrame, 12, 4, 3);
+    const xy = spiteCalculation(
+      gameFrame,
+      spites[selectedSpite].total,
+      spites[selectedSpite].x_images,
+      spites[selectedSpite].y_images
+    );
+    const spiteDisplayWidth = spites[selectedSpite].spriteWidth;
+    const spiteDisplayHeight = spites[selectedSpite].spriteHeight;
     ctx.drawImage(
-      jetMan,
-      xy.x * this.spriteWidth,
-      xy.y * this.spriteHeight,
-      this.spriteWidth,
-      this.spriteHeight,
-      mouse.x - this.spriteWidth / 4,
-      mouse.y - this.spriteWidth / 4,
-      this.spriteWidth / 2,
-      this.spriteHeight / 2
+      mouse.x > canvas.width / 2 ? jetRight : jetLeft,
+      // red,
+      isClicked ? 0 : xy.x * spites[selectedSpite].spriteWidth,
+      isClicked ? 0 : xy.y * spites[selectedSpite].spriteHeight,
+      spiteDisplayWidth,
+      spiteDisplayHeight,
+      mouse.x - spiteDisplayWidth / 2,
+      mouse.y - spiteDisplayHeight / 2,
+      spiteDisplayWidth,
+      spiteDisplayHeight
     );
   }
 }
 
 function spiteCalculation(gFrame, numberOfImages, maxX, maxY) {
   const nowFrame = ((gFrame - 1) % numberOfImages) + 1;
-  let fact = 0;
-  if (nowFrame >= 9) {
-    fact = 2;
-  } else if (nowFrame >= 5) {
-    fact = 1;
-  } else {
-    fact = 0;
-  }
-  const x = (nowFrame - 1) % 4;
-  const y = fact;
+  const divider = Math.floor(numberOfImages / maxY);
+  const x = (nowFrame - 1) % maxX;
+  let y = Math.floor(nowFrame / divider);
+  if (nowFrame % divider === 0) y--;
   return { x: x, y: y };
 }
 
