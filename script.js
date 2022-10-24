@@ -7,9 +7,11 @@ let theta;
 let gameFrame = 1;
 
 const jetRight = new Image();
+const back = new Image();
 const jetLeft = new Image();
-jetRight.src = "jetRight.png";
-jetLeft.src = "jetLeft.png";
+jetRight.src = "whiteRight.png";
+jetLeft.src = "whiteLeft.png";
+back.src = "b.jpg";
 let isClicked = false;
 
 const spites = {
@@ -39,12 +41,10 @@ window.addEventListener("mousemove", function (e) {
 window.addEventListener("mouseup", function (e) {
   isClicked = false;
 });
+
 window.addEventListener("mousedown", function (e) {
   isClicked = true;
 });
-
-// const bounds = canvas.getBoundingClientRect();
-// console.log(bounds);
 
 class Eye {
   constructor(x, y, radius) {
@@ -79,9 +79,10 @@ class Eye {
       pupil_y,
       pupil_radius
     );
-    grd.addColorStop(0, "#ccc");
-    grd.addColorStop(0.2, "#fff");
-    grd.addColorStop(1, "#fff");
+    grd.addColorStop(0, "#000");
+    // grd.addColorStop(0.8, "#f00");
+    grd.addColorStop(0.5, "#f00");
+    grd.addColorStop(1, "#f00");
     ctx.fillStyle = grd;
     ctx.fill();
     ctx.closePath();
@@ -89,7 +90,7 @@ class Eye {
     // draw iris
     ctx.beginPath();
     ctx.arc(iris_x, iris_y, iris_radius, 0, Math.PI * 2, true);
-    ctx.fillStyle = "#fff";
+    // ctx.fillStyle = "#rgba(255,255,255,0.5)";
     ctx.fill();
     ctx.closePath();
 
@@ -101,6 +102,7 @@ class Eye {
         iris_x - Math.sin(i) * iris_radius,
         iris_y - Math.cos(i) * iris_radius
       );
+      ctx.strokeStyle = "#fff";
       ctx.stroke();
       ctx.closePath();
     }
@@ -122,29 +124,9 @@ class Eye {
       Math.PI * 2,
       true
     );
-    ctx.fillStyle = "rgba(255,255,255,0.9)";
+    ctx.fillStyle = "rgba(255,255,255,0.5)";
     ctx.fill();
     ctx.closePath();
-    const xy = spiteCalculation(
-      gameFrame,
-      spites[selectedSpite].total,
-      spites[selectedSpite].x_images,
-      spites[selectedSpite].y_images
-    );
-    const spiteDisplayWidth = spites[selectedSpite].spriteWidth;
-    const spiteDisplayHeight = spites[selectedSpite].spriteHeight;
-    ctx.drawImage(
-      mouse.x > canvas.width / 2 ? jetRight : jetLeft,
-      // red,
-      isClicked ? 0 : xy.x * spites[selectedSpite].spriteWidth,
-      isClicked ? 0 : xy.y * spites[selectedSpite].spriteHeight,
-      spiteDisplayWidth,
-      spiteDisplayHeight,
-      mouse.x - spiteDisplayWidth / 2,
-      mouse.y - spiteDisplayHeight / 2,
-      spiteDisplayWidth,
-      spiteDisplayHeight
-    );
   }
 }
 
@@ -156,18 +138,6 @@ function spiteCalculation(gFrame, numberOfImages, maxX, maxY) {
   if (nowFrame % divider === 0) y--;
   return { x: x, y: y };
 }
-
-function drawCircle() {
-  ctx.beginPath();
-  ctx.arc(mouse.x, mouse.y, 20, 0, Math.PI * 2, true);
-  ctx.fillStyle = "#f00";
-  ctx.fill();
-  ctx.closePath();
-}
-
-canvas.addEventListener("mousemove", function (e) {
-  drawCircle();
-});
 
 function init() {
   eyes = [];
@@ -201,14 +171,45 @@ function init() {
 }
 
 function animate() {
-  // ctx.clearReact(0, 0, canvas.width, canvas.height);
   requestAnimationFrame(animate);
-  ctx.fillStyle = "#000";
+  ctx.fillStyle = "#fff";
   gameFrame++;
   ctx.fillRect(0, 0, canvas.width, canvas.height);
+  ctx.drawImage(
+    back,
+    0,
+    0,
+    canvas.width,
+    canvas.height,
+    0,
+    0,
+    canvas.width,
+    canvas.height
+  );
   for (let i = 0; i < eyes.length; i++) {
     eyes[i].draw();
   }
+  const xy = spiteCalculation(
+    gameFrame,
+    spites[selectedSpite].total,
+    spites[selectedSpite].x_images,
+    spites[selectedSpite].y_images
+  );
+  const spiteDisplayWidth = spites[selectedSpite].spriteWidth;
+  const spiteDisplayHeight = spites[selectedSpite].spriteHeight;
+
+  ctx.drawImage(
+    mouse.x > canvas.width / 2 ? jetRight : jetLeft,
+    // red,
+    isClicked ? 0 : xy.x * spites[selectedSpite].spriteWidth,
+    isClicked ? 0 : xy.y * spites[selectedSpite].spriteHeight,
+    spiteDisplayWidth,
+    spiteDisplayHeight,
+    mouse.x - spiteDisplayWidth / 2,
+    mouse.y - spiteDisplayHeight / 2,
+    spiteDisplayWidth,
+    spiteDisplayHeight
+  );
 }
 
 init();
