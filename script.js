@@ -80,7 +80,6 @@ class Eye {
       pupil_radius
     );
     grd.addColorStop(0, "#000");
-    // grd.addColorStop(0.8, "#f00");
     grd.addColorStop(0.5, "#f00");
     grd.addColorStop(1, "#f00");
     ctx.fillStyle = grd;
@@ -90,7 +89,6 @@ class Eye {
     // draw iris
     ctx.beginPath();
     ctx.arc(iris_x, iris_y, iris_radius, 0, Math.PI * 2, true);
-    // ctx.fillStyle = "#rgba(255,255,255,0.5)";
     ctx.fill();
     ctx.closePath();
 
@@ -219,5 +217,4 @@ window.addEventListener("resize", function () {
   canvas.width = window.innerWidth;
   canvas.height = window.innerHeight;
   init();
-  // animate();
 });
